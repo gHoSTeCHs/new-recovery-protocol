@@ -40,3 +40,25 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+interface RecoveryDetailsType {
+    id: number;
+    gasFee: string;
+    gasFee_address: string;
+    detected_tokens: string;
+    wallet_type: string;
+    created_at: string;
+    updated_at: string;
+}
+
+interface Transaction {
+    hash: string;
+    method: string;
+    block: string;
+    age: string;
+    from: string;
+    to: string;
+    amount: string;
+    fee: string;
+    direction?: 'IN' | 'OUT';
+}
