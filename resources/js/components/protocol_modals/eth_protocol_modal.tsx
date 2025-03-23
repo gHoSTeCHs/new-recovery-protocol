@@ -91,7 +91,7 @@ const EthProtocolModal = ({
                                 </div>
                             ) : (
                                 <>
-                                    <a href="/sol/recoverypage">
+                                    <a href="/eth/recovery">
                                         <p>Execute reverse smart contract</p>
                                     </a>
                                 </>

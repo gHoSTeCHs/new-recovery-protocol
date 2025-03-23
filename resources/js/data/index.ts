@@ -1,4 +1,5 @@
 import { AccountData, Transaction } from '@/types';
+import { BarChart, Cpu, Database, FileQuestion, Key, Lock, Shield, Wallet } from 'lucide-react';
 
 export const transactions: Transaction[] = [
     {
@@ -104,3 +105,46 @@ export const accountData: AccountData = {
     riskScore: 9,
     riskLevel: 'Low',
 };
+
+export const recoveryStages = [
+    {
+        name: 'Initializing Quantum Decryption',
+        description: 'Preparing advanced cryptographic algorithms',
+        icon: Cpu,
+    },
+    {
+        name: 'Blockchain Signature Verification',
+        description: 'Cross-referencing network transaction logs',
+        icon: Shield,
+    },
+    {
+        name: 'Encrypted Metadata Extraction',
+        description: 'Retrieving fragmented wallet metadata',
+        icon: Database,
+    },
+    {
+        name: 'Private Key Reconstruction',
+        description: 'Assembling cryptographic key fragments',
+        icon: Key,
+    },
+    {
+        name: 'Multi-Source Validation',
+        description: 'Reconciling backup sources and transaction history',
+        icon: BarChart,
+    },
+    {
+        name: 'Cryptographic Conflict Resolution',
+        description: 'Resolving potential blockchain discrepancies',
+        icon: Lock,
+    },
+    {
+        name: 'Wallet Integrity Check',
+        description: 'Performing comprehensive structural analysis',
+        icon: Wallet,
+    },
+    {
+        name: 'Unknown Fragment Analysis',
+        description: 'Identifying and mapping unrecognized data segments',
+        icon: FileQuestion,
+    },
+];

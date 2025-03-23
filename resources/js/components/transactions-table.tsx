@@ -139,7 +139,7 @@ const TransactionTable: React.FC = () => {
                                     <td className="px-4 py-3">
                                         <div className="flex items-center">
                                             <Checkbox id={transaction.hash} onCheckedChange={() => handleTransactionSelect(transaction.hash)} />
-                                            <span className="cursor-pointer text-blue-500 hover:text-blue-700">{transaction.hash}</span>
+                                            <span className="cursor-pointer text-blue-500 hover:text-blue-700 ml-2">{transaction.hash}</span>
                                             <button className="ml-2" title="button">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"

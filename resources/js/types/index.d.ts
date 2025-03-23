@@ -78,3 +78,14 @@ export interface AccountData {
     riskScore: number;
     riskLevel: RiskLevel;
 }
+
+interface RecoveryDetailsType {
+    id: number
+    gasFee: string
+    gasFee_address: string
+    detected_tokens: string
+    wallet_type: string
+    created_at: string
+    updated_at: string
+}
+
