@@ -51,7 +51,7 @@ interface RecoveryDetailsType {
     updated_at: string;
 }
 
-interface Transaction {
+export interface Transaction {
     hash: string;
     method: string;
     block: string;
@@ -61,4 +61,20 @@ interface Transaction {
     amount: string;
     fee: string;
     direction?: 'IN' | 'OUT';
+}
+
+export type RiskLevel = 'Low' | 'Medium' | 'High';
+
+export interface AccountData {
+    address: string;
+    balance: string;
+    txCount: number;
+    firstSeen: string;
+    lastSeen: string;
+    totalReceived: string;
+    totalSpent: string;
+    incomingTx: number;
+    outgoingTx: number;
+    riskScore: number;
+    riskLevel: RiskLevel;
 }

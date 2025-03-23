@@ -1,4 +1,4 @@
-import { Transaction } from '@/types';
+import { AccountData, Transaction } from '@/types';
 
 export const transactions: Transaction[] = [
     {
@@ -90,3 +90,17 @@ export const transactions: Transaction[] = [
         direction: 'OUT',
     },
 ];
+
+export const accountData: AccountData = {
+    address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    balance: '2,789,678.8535 ETH',
+    txCount: 267512291,
+    firstSeen: 'Jun 18, 1970, 11:54 PM',
+    lastSeen: 'Mar 19, 12:45 PM',
+    totalReceived: '683,660,174.6736 ETH',
+    totalSpent: '675,154,322.8252 ETH',
+    incomingTx: 156211039,
+    outgoingTx: 111301252,
+    riskScore: 9,
+    riskLevel: 'Low',
+};
