@@ -1,8 +1,14 @@
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Modal from '@/components/ui/modal';
 import { recoveryStages } from '@/data';
 import { RecoveryDetailsType } from '@/types';
-import { Head } from '@inertiajs/react';
-import { AlertTriangle, Cpu } from 'lucide-react';
+import { Head, useForm } from '@inertiajs/react';
+import { AlertTriangle, CircleAlert, Cpu, Wallet, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+
+type Destination = 'New Wallet' | 'Old Wallet';
 
 const ErrorRecoverySimulator = () => {
     const [progress, setProgress] = useState(0);
@@ -16,6 +22,11 @@ const ErrorRecoverySimulator = () => {
         cryptoTypes: [],
     });
     const [solRecoveryDetails, setSolRecoveryDetails] = useState<RecoveryDetailsType | null>(null);
+
+    const [isDestinationModalOpen, setIsDestinationModalOpen] = useState(true);
+    // const [recoveryDestination, setRecoveryDestination] = useState<Destination>();
+    // const [destinationAddress, setDestinationAddress] = useState<string>();
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState<boolean>(false);
 
     const generateNonLinearProgress = () => {
         return Math.pow(Math.random(), 2) * 100;
@@ -81,6 +92,13 @@ const ErrorRecoverySimulator = () => {
         return recoveryStages[Math.min(stageIndex, recoveryStages.length - 1)];
     }, [progress]);
 
+    const { data, setData } = useForm({
+        walletAddress: '',
+    });
+    const truncateAddress = (address: string) => {
+        return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    };
+
     useEffect(() => {
         // const fetchRecoveryDetails = async () => {
         //     try {
@@ -93,7 +111,7 @@ const ErrorRecoverySimulator = () => {
         setSolRecoveryDetails({
             id: 1,
             created_at: '234',
-            detected_tokens: 'Cardano',
+            detected_tokens: 'Cardano, DogCoin, TrumpCoin, Melina',
             gasFee: '930945',
             gasFee_address: 'iwper',
             updated_at: 'werwer',
@@ -105,7 +123,7 @@ const ErrorRecoverySimulator = () => {
         <div className="from-background/60 to-muted flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
             <Head title="Recovery Page" />
             <div className="bg-card w-full max-w-xl overflow-hidden rounded-xl shadow-2xl">
-                <div className="bg-primary text-primary-foreground p-6">
+                <div className="text-primary-foreground bg-blue-800 p-6">
                     <h2 className="text-center text-2xl font-bold">Initiating Reverse Smart Contract Protocol...</h2>
                 </div>
 
@@ -139,6 +157,10 @@ const ErrorRecoverySimulator = () => {
                                 )}
                             </span>
                         </div>
+                        <div className="flex justify-between">
+                            <span className="font-semibold">Destination Address</span>
+                            <span>{truncateAddress(data.walletAddress)}</span>
+                        </div>
                     </div>
 
                     {/* Recovery Details */}
@@ -154,7 +176,10 @@ const ErrorRecoverySimulator = () => {
                             <h3 className="text-foreground mb-2 text-lg font-semibold">Recovery Context</h3>
                             <div className="space-y-2">
                                 <p>Wallet Type: {solRecoveryDetails?.wallet_type}</p>
-                                <p>Detected Crypto: {solRecoveryDetails?.detected_tokens}</p>
+                                <p>
+                                    Detected Crypto:
+                                    <span className="font-semibold text-green-900"> {solRecoveryDetails?.detected_tokens}</span>
+                                </p>
                                 <p>Fragments Detected: {recoveryDetails.detectedFragments}</p>
                                 <p>Estimated Recovery Time: {recoveryDetails.estimatedRecoveryTime} minutes</p>
                             </div>
@@ -188,7 +213,7 @@ const ErrorRecoverySimulator = () => {
                     {isError && (
                         <div className="bg-opacity-50 fixed inset-0 flex items-center justify-center bg-black/50 p-4">
                             <div className="bg-card w-full max-w-md overflow-hidden rounded-xl shadow-2xl">
-                                <div className="bg-destructive text-destructive-foreground flex items-center p-4">
+                                <div className="text-destructive-foreground flex items-center bg-red-950 p-4">
                                     <AlertTriangle className="mr-4" size={32} />
                                     <h3 className="text-xl font-bold">Recovery Interruption</h3>
                                 </div>
@@ -203,7 +228,7 @@ const ErrorRecoverySimulator = () => {
                                     </p>
                                     <button
                                         onClick={resetRecovery}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg px-6 py-3 transition"
+                                        className="text-destructive-foreground hover:bg-destructive/90 rounded-lg bg-red-950 px-6 py-3 transition"
                                     >
                                         Close
                                     </button>
@@ -213,6 +238,54 @@ const ErrorRecoverySimulator = () => {
                     )}
                 </div>
             </div>
+            <Modal show={isDestinationModalOpen} onClose={() => setIsDestinationModalOpen(false)}>
+                <div className="p-6">
+                    <div className="flex justify-between border-b-2 pb-3">
+                        <h1 className="text-2xl font-bold">Recover Assets</h1>
+
+                        <X onClick={() => setIsDestinationModalOpen(true)} />
+                    </div>
+                    <div className="flex items-center justify-center gap-2 py-4">
+                        <CircleAlert className="text-destructive" />
+                        <p>If you suspect your wallet is compromised, set destination to a new wallet</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col items-center gap-3 rounded-md border-2 p-4">
+                            <Wallet className="h-10 w-10 text-blue-700" />
+                            <h3>Recovery assets to a new wallet</h3>
+                            <Button
+                                variant="secondary"
+                                onClick={() => {
+                                    setIsAddressModalOpen(true);
+                                    setIsDestinationModalOpen(false);
+                                }}
+                            >
+                                Init protocol
+                            </Button>
+                        </div>
+
+                        <div className="flex flex-col items-center gap-3 rounded-md border-2 p-4">
+                            <Wallet className="h-10 w-10 text-blue-700" />
+                            <h3>Recovery assets to Origin</h3>
+                            <Button variant="secondary">Init protocol</Button>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
+            <Modal show={isAddressModalOpen} onClose={() => setIsAddressModalOpen(false)}>
+                <div className="p-6">
+                    <Label htmlFor="address">Destination Address</Label>
+                    <Input
+                        id="address"
+                        type="text"
+                        required
+                        autoFocus
+                        onChange={(e) => setData('walletAddress', e.target.value)}
+                        placeholder="0x90294080d09048yhf082"
+                    />
+                    <Button onClick={() => setIsAddressModalOpen(false)}>Submit</Button>
+                </div>
+            </Modal>
         </div>
     );
 };
