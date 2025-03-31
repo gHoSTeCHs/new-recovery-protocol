@@ -10,14 +10,15 @@ interface SettingsProps {
         walletName: string;
         tokenName: string;
     };
+    initialMessageType: string;
 }
 
-const Settings = ({ walletSettings }: SettingsProps) => {
+const Settings = ({ walletSettings, initialMessageType }: SettingsProps) => {
     return (
         <AppLayout>
             <Head title={'Settings'} />
             <div className="space-y-6 px-6 py-8">
-                <RecoveryMessageType />
+                <RecoveryMessageType initialMessageType={initialMessageType} />
                 <WalletTokenSettings
                     initialWalletAddress={walletSettings.initialWalletAddress}
                     initialTokenAmount={walletSettings.initialTokenAmount}

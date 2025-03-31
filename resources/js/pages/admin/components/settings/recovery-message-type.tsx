@@ -32,7 +32,7 @@ const RecoveryMessageType = ({ initialMessageType = 'error' }: RecoveryMessageTy
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/settings/recovery-message');
+        post('/admin/settings/recovery-message');
     };
 
     const messageTypes = [

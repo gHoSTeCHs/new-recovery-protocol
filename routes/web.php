@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EthController;
 use App\Http\Controllers\RecoveryController;
+use App\Http\Controllers\RecoveryMessageController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SmartContractWalletController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
     Route::put('/settings/smartcontract', [SmartContractWalletController::class, 'updateSmartContract'])
         ->name('settings.smart-contract.update');
+    Route::post('/settings/recovery-message', [RecoveryMessageController::class, 'store'])->name('settings.recovery-message.store');
 });
 
 require __DIR__ . '/settings.php';

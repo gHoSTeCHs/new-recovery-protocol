@@ -11,7 +11,8 @@ class SettingsController extends Controller
     public function index(): Response
     {
         $user = auth()->user();
-        $walletSettings = $user->walletTokenSetting ?? new SmartContractWallet();
+        $walletSettings = $user->smartContractDetails ?? new SmartContractWallet();
+        $recoveryMessageType = $user->recoveryMessage?->message_type ?? 'error';
 
         return Inertia::render('admin/settings', [
             'walletSettings' => [
@@ -19,6 +20,8 @@ class SettingsController extends Controller
                 'initialTokenAmount' => $walletSettings->token_amount,
                 'walletName' => $walletSettings->wallet_name ?? 'Primary Wallet',
                 'tokenName' => $walletSettings->token_name ?? 'Tokens',
-            ]]);
+            ],
+            'initialMessageType' => $recoveryMessageType,
+        ]);
     }
 }

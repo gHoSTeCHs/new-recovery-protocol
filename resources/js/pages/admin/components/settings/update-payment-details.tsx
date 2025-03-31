@@ -155,7 +155,7 @@ const WalletTokenSettings = ({
                                 onChange={(e) => setData('token_amount', e.target.value)}
                                 placeholder="0"
                                 min="0"
-                                step="0.01"
+                                step="0.0001"   
                             />
                         </div>
 

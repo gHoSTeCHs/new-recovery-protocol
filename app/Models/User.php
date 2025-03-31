@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(SmartContractWallet::class);
     }
+
+    public function recoveryMessage(): HasOne
+    {
+        return $this->hasOne(RecoveryMessage::class);
+    }
 }
