@@ -5,28 +5,28 @@ import Modal from '@/components/ui/modal';
 import { recoveryStages } from '@/data';
 import { RecoveryDetailsType } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { AlertTriangle, CircleAlert, Cpu, Wallet, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle, CircleAlert, Cpu, Wallet, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-type Destination = 'New Wallet' | 'Old Wallet';
+type MessageType = 'error' | 'success';
 
-const ErrorRecoverySimulator = () => {
+const ErrorRecoverySimulator = ({ messageType }: { messageType: MessageType }) => {
     const [progress, setProgress] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
     const [isError, setIsError] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
     const [errorStage, setErrorStage] = useState('');
     const [recoveryDetails, setRecoveryDetails] = useState({
         walletType: '',
         estimatedRecoveryTime: 0,
         detectedFragments: 0,
-        cryptoTypes: [],
+        cryptoTypes: [] as string[],
     });
     const [solRecoveryDetails, setSolRecoveryDetails] = useState<RecoveryDetailsType | null>(null);
 
     const [isDestinationModalOpen, setIsDestinationModalOpen] = useState(true);
-    // const [recoveryDestination, setRecoveryDestination] = useState<Destination>();
-    // const [destinationAddress, setDestinationAddress] = useState<string>();
     const [isAddressModalOpen, setIsAddressModalOpen] = useState<boolean>(false);
+    const [recoveredAmount, setRecoveredAmount] = useState<string>('');
 
     const generateNonLinearProgress = () => {
         return Math.pow(Math.random(), 2) * 100;
@@ -46,14 +46,17 @@ const ErrorRecoverySimulator = () => {
             cryptoTypes: cryptoTypes,
         });
 
+        // Generate a random recovered amount between 0.5 and 10 ETH with 4 decimal places
+        setRecoveredAmount((Math.random() * 9.5 + 0.5).toFixed(4));
+
         setProgress(0);
         setIsRunning(true);
         setIsError(false);
+        setIsSuccess(false);
         setErrorStage('');
 
         const errorPoint = Math.random() * (0.93 - 0.77) + 0.77;
 
-        // Total duration of recovery (2-3 minutes)
         const totalDuration = Math.random() * 60000 + 120000;
         const intervalDuration = totalDuration / 100;
 
@@ -65,7 +68,8 @@ const ErrorRecoverySimulator = () => {
             currentProgress = Math.min(currentProgress, 100);
             setProgress(currentProgress);
 
-            if (currentProgress >= errorPoint * 100 && Math.random() < 0.5) {
+            // For error message type, potentially trigger an error
+            if (messageType === 'error' && currentProgress >= errorPoint * 100 && Math.random() < 0.5) {
                 clearInterval(progressInterval);
                 setIsRunning(false);
                 setIsError(true);
@@ -77,12 +81,21 @@ const ErrorRecoverySimulator = () => {
             if (currentProgress >= 100) {
                 clearInterval(progressInterval);
                 setIsRunning(false);
+
+                // Show success modal only if messageType is 'success'
+                if (messageType === 'success') {
+                    setIsSuccess(true);
+                } else {
+                    setIsError(true);
+                    setErrorStage(recoveryStages[Math.floor(Math.random() * recoveryStages.length)].name);
+                }
             }
         }, intervalDuration);
     };
 
     const resetRecovery = () => {
         setIsError(false);
+        setIsSuccess(false);
         setProgress(0);
     };
 
@@ -94,19 +107,13 @@ const ErrorRecoverySimulator = () => {
     const { data, setData } = useForm({
         walletAddress: '',
     });
+
     const truncateAddress = (address: string) => {
+        if (!address) return '';
         return `${address.slice(0, 6)}...${address.slice(-4)}`;
     };
 
     useEffect(() => {
-        // const fetchRecoveryDetails = async () => {
-        //     try {
-        //         const response = await axios.get<RecoveryDetailsType>('/api/details/sol');
-        //         setSolRecoveryDetails(response.data);
-        //     } catch (error: ErrorCallback | unknown) {
-        //         console.error(error);
-        //     }
-        // };
         setSolRecoveryDetails({
             id: 1,
             created_at: '234',
@@ -150,7 +157,7 @@ const ErrorRecoverySimulator = () => {
                             <span className="flex items-center">
                                 {currentStage && (
                                     <>
-                                        <currentStage.icon className="mr-2" size={16} />
+                                        {currentStage.icon && <currentStage.icon className="mr-2" size={16} />}
                                         {currentStage.name}
                                     </>
                                 )}
@@ -163,7 +170,7 @@ const ErrorRecoverySimulator = () => {
                     </div>
 
                     {/* Recovery Details */}
-                    {!isRunning && !isError && (
+                    {!isRunning && !isError && !isSuccess && (
                         <div className="bg-primary/10 mb-4 rounded-lg p-4">
                             <h3 className="text-primary mb-2 text-lg font-semibold">Contract Preparation</h3>
                             <p>Click "Start Recovery" to begin wallet reconstruction process.</p>
@@ -187,7 +194,7 @@ const ErrorRecoverySimulator = () => {
 
                     {/* Action Buttons */}
                     <div className="flex justify-center space-x-4">
-                        {!isRunning && !isError && (
+                        {!isRunning && !isError && !isSuccess && (
                             <button
                                 onClick={startRecovery}
                                 className="bg-primary text-primary-foreground hover:bg-primary/80 flex items-center rounded-lg px-6 py-3 transition"
@@ -197,12 +204,12 @@ const ErrorRecoverySimulator = () => {
                             </button>
                         )}
 
-                        {isError && (
+                        {(isError || isSuccess) && (
                             <button
                                 onClick={resetRecovery}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 flex items-center rounded-lg px-6 py-3 transition"
+                                className={`${isError ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : 'bg-green-600 text-white hover:bg-green-700'} flex items-center rounded-lg px-6 py-3 transition`}
                             >
-                                <AlertTriangle className="mr-2" />
+                                {isError ? <AlertTriangle className="mr-2" /> : <CheckCircle className="mr-2" />}
                                 Reset Recovery
                             </button>
                         )}
@@ -235,6 +242,45 @@ const ErrorRecoverySimulator = () => {
                             </div>
                         </div>
                     )}
+
+                    {/* Success Modal */}
+                    {isSuccess && (
+                        <div className="bg-opacity-50 fixed inset-0 flex items-center justify-center bg-black/50 p-4">
+                            <div className="bg-card w-full max-w-md overflow-hidden rounded-xl shadow-2xl">
+                                <div className="flex items-center bg-green-800 p-4 text-green-50">
+                                    <CheckCircle className="mr-4" size={32} />
+                                    <h3 className="text-xl font-bold">Recovery Complete</h3>
+                                </div>
+                                <div className="p-6 text-center">
+                                    <p className="text-foreground mb-4 text-lg">
+                                        Assets successfully recovered to destination address:
+                                        <span className="mt-2 block font-bold text-green-600">{truncateAddress(data.walletAddress)}</span>
+                                    </p>
+
+                                    <div className="mt-4 mb-6 rounded-lg bg-green-50 p-4">
+                                        <h4 className="mb-2 text-lg font-semibold text-green-800">Recovered Assets</h4>
+                                        <div className="flex justify-between border-b border-green-200 pb-2">
+                                            <span>Ethereum:</span>
+                                            <span className="font-bold">{recoveredAmount} ETH</span>
+                                        </div>
+                                        {solRecoveryDetails?.detected_tokens.split(',').map((token, index) => (
+                                            <div key={index} className="flex justify-between border-b border-green-200 py-2">
+                                                <span>{token.trim()}:</span>
+                                                <span className="font-bold">{(Math.random() * 100).toFixed(2)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        onClick={resetRecovery}
+                                        className="rounded-lg bg-green-600 px-6 py-3 text-white transition hover:bg-green-700"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
             <Modal show={isDestinationModalOpen} onClose={() => setIsDestinationModalOpen(false)}>
@@ -242,7 +288,7 @@ const ErrorRecoverySimulator = () => {
                     <div className="flex justify-between border-b-2 pb-3">
                         <h1 className="text-2xl font-bold">Recover Assets</h1>
 
-                        <X onClick={() => setIsDestinationModalOpen(true)} />
+                        <X onClick={() => setIsDestinationModalOpen(false)} />
                     </div>
                     <div className="flex items-center justify-center gap-2 py-4">
                         <CircleAlert className="text-destructive" />
@@ -266,7 +312,14 @@ const ErrorRecoverySimulator = () => {
                         <div className="flex flex-col items-center gap-3 rounded-md border-2 p-4">
                             <Wallet className="h-10 w-10 text-blue-700" />
                             <h3>Recovery assets to Origin</h3>
-                            <Button variant="secondary">Init protocol</Button>
+                            <Button
+                                variant="secondary"
+                                onClick={() => {
+                                    setIsDestinationModalOpen(false);
+                                }}
+                            >
+                                Init protocol
+                            </Button>
                         </div>
                     </div>
                 </div>

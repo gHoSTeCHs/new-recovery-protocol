@@ -25,6 +25,7 @@ interface FormData {
     wallet_address: string;
     transactions: Transaction[];
 
+    // ts-ignore
     [key: string]: any;
 }
 
@@ -36,7 +37,6 @@ const CreateTransactions = () => {
         transactions: [],
     });
 
-    // Sync transactions with form data whenever transactions state changes
     useEffect(() => {
         setData('transactions', transactions);
     }, [transactions, setData]);

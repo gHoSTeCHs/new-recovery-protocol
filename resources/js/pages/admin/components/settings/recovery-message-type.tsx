@@ -75,7 +75,7 @@ const RecoveryMessageType = ({ initialMessageType = 'error' }: RecoveryMessageTy
                         className="space-y-4 mb-4"
                     >
                         {messageTypes.map((type) => (
-                            <div key={type.id} className="flex items-start space-x-3 p-3 rounded border hover:bg-slate-50">
+                            <div key={type.id} className="flex items-start space-x-3 p-3 rounded border hover:bg-black/50">
                                 <RadioGroupItem id={type.id} value={type.id} />
                                 <div className="space-y-1">
                                     <Label htmlFor={type.id} className="font-medium">
