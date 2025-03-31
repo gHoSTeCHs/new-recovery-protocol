@@ -51,7 +51,6 @@ const ErrorRecoverySimulator = () => {
         setIsError(false);
         setErrorStage('');
 
-        // Randomly choose an error point between 77% and 93%
         const errorPoint = Math.random() * (0.93 - 0.77) + 0.77;
 
         // Total duration of recovery (2-3 minutes)
