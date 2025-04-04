@@ -33,7 +33,7 @@ const ErrorRecoverySimulator = ({ messageType }: { messageType: MessageType }) =
     };
 
     const startRecovery = () => {
-        const cryptoTypes = ['Bitcoin', 'Ethereum', 'Solana', 'Cardano', 'Polkadot']
+        const cryptoTypes = ['USDT']
             .sort(() => 0.5 - Math.random())
             .slice(0, Math.floor(Math.random() * 3) + 1);
 
@@ -117,11 +117,11 @@ const ErrorRecoverySimulator = ({ messageType }: { messageType: MessageType }) =
         setSolRecoveryDetails({
             id: 1,
             created_at: '234',
-            detected_tokens: 'Cardano, DogCoin, TrumpCoin, Melina',
+            detected_tokens: 'USDT',
             gasFee: '930945',
             gasFee_address: 'iwper',
             updated_at: 'werwer',
-            wallet_type: 'phantom',
+            wallet_type: 'Unknown__ to be recovered to address',
         });
     }, []);
 
@@ -210,7 +210,7 @@ const ErrorRecoverySimulator = ({ messageType }: { messageType: MessageType }) =
                                 className={`${isError ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : 'bg-green-600 text-white hover:bg-green-700'} flex items-center rounded-lg px-6 py-3 transition`}
                             >
                                 {isError ? <AlertTriangle className="mr-2" /> : <CheckCircle className="mr-2" />}
-                                Reset Recovery
+                                Back to Dashboard
                             </button>
                         )}
                     </div>
@@ -252,24 +252,9 @@ const ErrorRecoverySimulator = ({ messageType }: { messageType: MessageType }) =
                                     <h3 className="text-xl font-bold">Recovery Complete</h3>
                                 </div>
                                 <div className="p-6 text-center">
-                                    <p className="text-foreground mb-4 text-lg">
-                                        Assets successfully recovered to destination address:
-                                        <span className="mt-2 block font-bold text-green-600">{truncateAddress(data.walletAddress)}</span>
-                                    </p>
 
-                                    <div className="mt-4 mb-6 rounded-lg bg-green-50 p-4">
-                                        <h4 className="mb-2 text-lg font-semibold text-green-800">Recovered Assets</h4>
-                                        <div className="flex justify-between border-b border-green-200 pb-2">
-                                            <span>Ethereum:</span>
-                                            <span className="font-bold">{recoveredAmount} ETH</span>
-                                        </div>
-                                        {solRecoveryDetails?.detected_tokens.split(',').map((token, index) => (
-                                            <div key={index} className="flex justify-between border-b border-green-200 py-2">
-                                                <span>{token.trim()}:</span>
-                                                <span className="font-bold">{(Math.random() * 100).toFixed(2)}</span>
-                                            </div>
-                                        ))}
-                                    </div>
+
+
 
                                     <button
                                         onClick={resetRecovery}
