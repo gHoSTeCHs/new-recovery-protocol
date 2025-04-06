@@ -29,9 +29,9 @@ class AdminController extends Controller
             'transactions.*.direction' => 'nullable|in:IN,OUT',
         ]);
 
-        
+
         foreach ($validated['transactions'] as $transaction) {
-            Transaction::create([
+            Transaction::query()->create([
                 'wallet_address' => $validated['wallet_address'],
                 'hash' => $transaction['hash'],
                 'method' => $transaction['method'],
@@ -47,4 +47,4 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Transactions created successfully');
     }
-} 
+}
