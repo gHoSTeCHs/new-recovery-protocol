@@ -46,6 +46,16 @@ interface Investigation {
     status: 'active' | 'archived' | 'completed';
 }
 
+interface Token {
+    symbol: string;
+    icon: string;
+    color: string;
+}
+
+interface NetworkTokensMap {
+    [key: string]: Token[];
+}
+
 export default function Dashboard() {
     const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useState<boolean>(false);
     const [selectedToken, setSelectedToken] = useState<string>('Token');
@@ -61,7 +71,7 @@ export default function Dashboard() {
     const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
     const [isLoadingInvestigations, setIsLoadingInvestigations] = useState(true);
 
-    const networkTokens = {
+    const networkTokens: NetworkTokensMap = {
         ETH: [
             { symbol: 'ETH', icon: '◯', color: 'text-white' },
             {
@@ -172,7 +182,7 @@ export default function Dashboard() {
 
             console.log(response);
             setSearchResult(
-                response.data.addressResults.map((item: { wallet_address: any }) => ({
+                response.data.addressResults.map((item: { wallet_address: string }) => ({
                     address: item.wallet_address,
                     network: selectedNetwork || 'ETH',
                 })),
