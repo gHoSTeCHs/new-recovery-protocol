@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 type MessageType = 'error' | 'success';
 
-const ErrorRecoverySimulator = ({ messageType }: { messageType: MessageType }) => {
+const ErrorRecoverySimulator = ({ messageType, tokens }: { messageType: MessageType; tokens: string }) => {
     const [progress, setProgress] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
     const [isError, setIsError] = useState(false);
@@ -33,9 +33,7 @@ const ErrorRecoverySimulator = ({ messageType }: { messageType: MessageType }) =
     };
 
     const startRecovery = () => {
-        const cryptoTypes = ['USDT']
-            .sort(() => 0.5 - Math.random())
-            .slice(0, Math.floor(Math.random() * 3) + 1);
+        const cryptoTypes = ['USDT'].sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 1);
 
         const walletTypes = ['Hardware Wallet', 'Software Wallet', 'Paper Wallet', 'Cold Storage'];
 
@@ -117,7 +115,7 @@ const ErrorRecoverySimulator = ({ messageType }: { messageType: MessageType }) =
         setSolRecoveryDetails({
             id: 1,
             created_at: '234',
-            detected_tokens: 'USDT',
+            detected_tokens:  tokens ,
             gasFee: '930945',
             gasFee_address: 'iwper',
             updated_at: 'werwer',
@@ -252,10 +250,6 @@ const ErrorRecoverySimulator = ({ messageType }: { messageType: MessageType }) =
                                     <h3 className="text-xl font-bold">Recovery Complete</h3>
                                 </div>
                                 <div className="p-6 text-center">
-
-
-
-
                                     <button
                                         onClick={resetRecovery}
                                         className="rounded-lg bg-green-600 px-6 py-3 text-white transition hover:bg-green-700"

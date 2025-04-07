@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RecoveryMessage;
 use App\Models\SmartContractWallet;
+use App\Models\Token;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -16,8 +17,11 @@ class RecoveryController extends Controller
         $message = RecoveryMessage::query()->where('user_id', Auth::id())->first();
         $error = $message->message_type;
 
+        $tokens = Token::query()->where('id', 1)->first();
+
         return Inertia::render('recovery/eth-recovery', [
-            'messageType' => $error
+            'messageType' => $error,
+            'tokens' => $tokens->tokens,
         ]);
     }
 
