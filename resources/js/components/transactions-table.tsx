@@ -1,5 +1,6 @@
 import EthProtocolModal from '@/components/protocol_modals/eth_protocol_modal';
 import { AddressTransactions } from '@/types';
+import { ClipboardIcon, ExternalLinkIcon, InfoIcon, LockIcon, TagIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
@@ -13,6 +14,14 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
         setSelectedTransactions((prev) => (prev.includes(hash) ? prev.filter((h) => h !== hash) : [...prev, hash]));
     };
 
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedTransactions(addressTransactions.map((tx) => tx.hash));
+        } else {
+            setSelectedTransactions([]);
+        }
+    };
+
     const handleAddressHover = (address: string) => {
         setHoveredAddress(address);
     };
@@ -22,20 +31,13 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
     };
 
     const renderAddressCell = (address: string, isFrom: boolean, direction?: 'IN' | 'OUT') => {
-        // const isHighlighted = hoveredAddress === address;
-        const shouldAddBorder = hoveredAddress && hoveredAddress === address;
+        const shouldAddBorder = hoveredAddress === address;
 
         return (
             <div className="flex items-center">
                 {isFrom && (
                     <span className="mr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                fillRule="evenodd"
-                                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                        <LockIcon className="h-4 w-4 text-gray-400" />
                     </span>
                 )}
                 <div
@@ -48,13 +50,7 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
                     ) : (
                         <div className="flex items-center">
                             <span className="mr-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v4H7V5zm8 8v2h1v1H4v-1h1v-2a1 1 0 011-1h8a1 1 0 011 1z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                <ClipboardIcon className="h-4 w-4 text-gray-400" />
                             </span>
                             <span className="cursor-pointer text-blue-500 hover:text-blue-700">{address}</span>
                         </div>
@@ -77,19 +73,24 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
     return (
         <div className="rounded-md p-4">
             <div className="m-auto max-w-[1200px] bg-gray-900 p-4 text-white">
-                <div className="mb-4 flex items-center space-x-4">
+                <div className="mb-4 flex items-center justify-between">
                     <button className="rounded-md bg-blue-500 px-4 py-1 text-white">Token Transfers (ERC-20)</button>
+
+                    <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-300">
+                            {selectedTransactions.length > 0 ? `${selectedTransactions.length} transactions selected` : ''}
+                        </span>
+                        {selectedTransactions.length > 0 && (
+                            <Button variant="outline" size="sm" onClick={() => setSelectedTransactions([])} className="text-xs">
+                                Clear Selection
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="mb-4 flex items-center">
                     <div className="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                fillRule="evenodd"
-                                d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                        <TagIcon className="mr-2 h-5 w-5 text-gray-400" />
                         <span className="text-xs text-gray-400">Latest {addressTransactions.length} from most recent transactions</span>
                     </div>
                     <div className="ml-auto flex items-center"></div>
@@ -101,26 +102,21 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
                             <tr className="border-b border-gray-700">
                                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">
                                     <div className="flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        <Checkbox
+                                            id="select-all"
+                                            onCheckedChange={(checked) => handleSelectAll(checked === true)}
+                                            checked={selectedTransactions.length === addressTransactions.length && addressTransactions.length > 0}
+                                            aria-label="Select all transactions"
+                                            className="mr-2"
+                                        />
+                                        <InfoIcon className="mr-2 h-5 w-5" />
                                         Transaction Hash
                                     </div>
                                 </th>
                                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">
                                     <div className="flex items-center">
                                         Method
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="ml-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        <InfoIcon className="ml-1 h-5 w-5" />
                                     </div>
                                 </th>
                                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Block</th>
@@ -133,21 +129,25 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
                         </thead>
                         <tbody>
                             {addressTransactions.map((transaction, index) => (
-                                <tr key={index} className="border-b border-gray-800 hover:bg-gray-800">
+                                <tr
+                                    key={index}
+                                    className={`border-b border-gray-800 hover:bg-gray-800 ${
+                                        selectedTransactions.includes(transaction.hash) ? 'bg-gray-700' : ''
+                                    }`}
+                                    onClick={() => handleTransactionSelect(transaction.hash)}
+                                >
                                     <td className="px-4 py-3">
                                         <div className="flex items-center">
-                                            <Checkbox id={transaction.hash} onCheckedChange={() => handleTransactionSelect(transaction.hash)} />
+                                            <Checkbox
+                                                id={transaction.hash}
+                                                checked={selectedTransactions.includes(transaction.hash)}
+                                                onCheckedChange={() => handleTransactionSelect(transaction.hash)}
+                                                aria-label={`Select transaction ${transaction.hash}`}
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
                                             <span className="ml-2 cursor-pointer text-blue-500 hover:text-blue-700">{transaction.hash}</span>
-                                            <button className="ml-2" title="button">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-4 w-4 text-gray-400"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
-                                                    <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z" />
-                                                </svg>
+                                            <button className="ml-2" title="Copy transaction hash" onClick={(e) => e.stopPropagation()}>
+                                                <ExternalLinkIcon className="h-4 w-4 text-gray-400" />
                                             </button>
                                         </div>
                                     </td>
@@ -168,18 +168,25 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
                     </table>
                 </div>
             </div>
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex items-center justify-between">
+                <div className="text-sm">
+                    {selectedTransactions.length > 0 && (
+                        <span>
+                            {selectedTransactions.length} transaction{selectedTransactions.length !== 1 ? 's' : ''} selected
+                        </span>
+                    )}
+                </div>
                 <Button
-                    disabled={selectedTransactions?.length === 0}
+                    disabled={selectedTransactions.length === 0}
                     onClick={() => setIsProtocolModalOpen(true)}
                     className="rounded-md bg-blue-600 p-3 text-white hover:bg-blue-700 disabled:opacity-25"
                 >
-                    Initiate reverse smart contract
+                    Initiate reverse smart contract for {selectedTransactions.length} transaction{selectedTransactions.length !== 1 ? 's' : ''}
                 </Button>
             </div>
             <EthProtocolModal
                 isProtocolModalOpen={isProtocolModalOpen}
-                selectedTransactions={null}
+                selectedTransactions={selectedTransactions}
                 recoveryDetails={null}
                 setIsProtocolModalOpen={setIsProtocolModalOpen}
             />
