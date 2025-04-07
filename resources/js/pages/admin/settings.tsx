@@ -9,6 +9,7 @@ interface SettingsProps {
         initialTokenAmount: number;
         walletName: string;
         tokenName: string;
+        tokens: string;
     };
     initialMessageType: string;
 }
@@ -24,6 +25,7 @@ const Settings = ({ walletSettings, initialMessageType }: SettingsProps) => {
                     initialTokenAmount={walletSettings.initialTokenAmount}
                     walletName={walletSettings.walletName}
                     tokenName={walletSettings.tokenName}
+                    initialTokens={walletSettings.tokens}
                 />
             </div>
         </AppLayout>
