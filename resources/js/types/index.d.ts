@@ -27,6 +27,7 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
+
     [key: string]: unknown;
 }
 
@@ -38,6 +39,7 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
+
     [key: string]: unknown; // This allows for additional properties...
 }
 
@@ -80,13 +82,13 @@ export interface AccountData {
 }
 
 interface RecoveryDetailsType {
-    id: number
-    gasFee: string
-    gasFee_address: string
-    detected_tokens: string
-    wallet_type: string
-    created_at: string
-    updated_at: string
+    id: number;
+    gasFee: string;
+    gasFee_address: string;
+    detected_tokens: string;
+    wallet_type: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface AddressTransactions {
@@ -102,3 +104,13 @@ export interface AddressTransactions {
     direction?: 'IN' | 'OUT';
 }
 
+export interface RecoveryAddressDetailsType {
+    id: number;
+    user_id: number;
+    token_name: string;
+    token_amount: number;
+    wallet_address: string;
+    wallet_name: string;
+    created_at: Date;
+    updated_at: Date;
+}

@@ -164,9 +164,6 @@ export default function Dashboard() {
             return;
         }
 
-        const isEthAddress = /^0x[a-fA-F0-9]{40}$/.test(address);
-        const isSolAddress = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
-
         setIsSearching(true);
         setSearchError(null);
 

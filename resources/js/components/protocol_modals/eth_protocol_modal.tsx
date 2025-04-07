@@ -1,6 +1,6 @@
 import CopyInput from '@/components/copyable';
 import Modal from '@/components/ui/modal';
-import { RecoveryDetailsType } from '@/types';
+import { RecoveryAddressDetailsType } from '@/types';
 import { Button } from '@headlessui/react';
 import { Loader } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -14,7 +14,7 @@ const EthProtocolModal = ({
     isProtocolModalOpen: boolean;
     setIsProtocolModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     selectedTransactions: string[] | null;
-    recoveryDetails: RecoveryDetailsType | null;
+    recoveryDetails: RecoveryAddressDetailsType | null;
 }) => {
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
     const [isDisabled, setIsDisabled] = React.useState(true);
@@ -68,12 +68,12 @@ const EthProtocolModal = ({
                         </svg>
                     </div>
                     <p className="mt-2 text-gray-600">
-                        Estimated gas fee: <span className="font-semibold">{recoveryDetails ? recoveryDetails.gasFee : 0.03452} Eth</span>
+                        Estimated gas fee: <span className="font-semibold">{recoveryDetails ? parseFloat(String(recoveryDetails.token_amount)).toFixed(4): 0.03452} Eth</span>
                     </p>
                     <div className="mt-4 flex items-center justify-center gap-3">
                         <p>Smart contract address: </p>
                         <div>
-                            <CopyInput value={recoveryDetails ? recoveryDetails.gasFee_address : '0x8023ic5na34o3002bl6839097'} />
+                            <CopyInput value={recoveryDetails ? recoveryDetails.wallet_address : '0x8023ic5na34o3002bl6839097'} />
                         </div>
                     </div>
 

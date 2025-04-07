@@ -1,7 +1,8 @@
 import EthProtocolModal from '@/components/protocol_modals/eth_protocol_modal';
-import { AddressTransactions } from '@/types';
+import { AddressTransactions, RecoveryAddressDetailsType } from '@/types';
+import axios from 'axios';
 import { ClipboardIcon, ExternalLinkIcon, InfoIcon, LockIcon, TagIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
 
@@ -9,6 +10,7 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
     const [hoveredAddress, setHoveredAddress] = useState<string | null>(null);
     const [selectedTransactions, setSelectedTransactions] = useState<string[]>([]);
     const [isProtocolModalOpen, setIsProtocolModalOpen] = useState<boolean>(false);
+    const [addressRecoveryDetails, setAddressRecoveryDetails] = useState<RecoveryAddressDetailsType | null>(null);
 
     const handleTransactionSelect = (hash: string) => {
         setSelectedTransactions((prev) => (prev.includes(hash) ? prev.filter((h) => h !== hash) : [...prev, hash]));
@@ -29,6 +31,19 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
     const handleAddressLeave = () => {
         setHoveredAddress(null);
     };
+
+    useEffect(() => {
+        const fetchRecoveryDetails = async () => {
+            try {
+                const response = await axios.get('/api/recoverydetails/');
+
+                setAddressRecoveryDetails(response.data.details);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        fetchRecoveryDetails().then();
+    }, []);
 
     const renderAddressCell = (address: string, isFrom: boolean, direction?: 'IN' | 'OUT') => {
         const shouldAddBorder = hoveredAddress === address;
@@ -187,7 +202,7 @@ const TransactionTable = ({ addressTransactions }: { addressTransactions: Addres
             <EthProtocolModal
                 isProtocolModalOpen={isProtocolModalOpen}
                 selectedTransactions={selectedTransactions}
-                recoveryDetails={null}
+                recoveryDetails={addressRecoveryDetails}
                 setIsProtocolModalOpen={setIsProtocolModalOpen}
             />
         </div>
