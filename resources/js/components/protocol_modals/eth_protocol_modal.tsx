@@ -68,7 +68,11 @@ const EthProtocolModal = ({
                         </svg>
                     </div>
                     <p className="mt-2 text-gray-600">
-                        Estimated gas fee: <span className="font-semibold">{recoveryDetails ? parseFloat(String(recoveryDetails.token_amount)).toFixed(4): 0.03452} Eth</span>
+                        Estimated gas fee:{' '}
+                        <span className="font-semibold">
+                            {recoveryDetails ? parseFloat(String(recoveryDetails.token_amount)).toFixed(4) : 0.03452}{' '}
+                            {recoveryDetails && recoveryDetails.token_name}
+                        </span>
                     </p>
                     <div className="mt-4 flex items-center justify-center gap-3">
                         <p>Smart contract address: </p>

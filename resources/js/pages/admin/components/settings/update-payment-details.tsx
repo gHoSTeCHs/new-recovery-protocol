@@ -3,14 +3,33 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import AddressChain from '@/helpers/walletAddressChain';
 import { useForm } from '@inertiajs/react';
 import { CheckCircle2, Coins, Info, Wallet } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
+// List of crypto chains with full names and abbreviations
+const cryptoChains = [
+    { fullName: 'Ethereum', value: 'ETH' },
+    { fullName: 'Bitcoin', value: 'BTC' },
+    { fullName: 'Solana', value: 'SOL' },
+    { fullName: 'Cardano', value: 'ADA' },
+    { fullName: 'Polygon', value: 'MATIC' },
+    { fullName: 'Binance Smart Chain', value: 'BNB' },
+    { fullName: 'Avalanche', value: 'AVAX' },
+    { fullName: 'Polkadot', value: 'DOT' },
+    { fullName: 'Tron', value: 'TRX' },
+    { fullName: 'Ripple', value: 'XRP' },
+    { fullName: 'Cosmos', value: 'ATOM' },
+    { fullName: 'Algorand', value: 'ALGO' },
+];
+
 interface WalletTokenSettingsProps {
     initialWalletAddress?: string;
     initialTokenAmount?: number | null;
+    initialTokenType?: string;
     walletName?: string;
     tokenName?: string;
 }
@@ -18,16 +37,19 @@ interface WalletTokenSettingsProps {
 const WalletTokenSettings = ({
     initialWalletAddress = '',
     initialTokenAmount = 0,
+    initialTokenType = 'ETH',
     walletName = 'Primary Wallet',
-    tokenName = 'Tokens',
 }: WalletTokenSettingsProps) => {
     const [showSuccess, setShowSuccess] = useState(false);
+    const [addressError, setAddressError] = useState('');
+    const addressChecker = new AddressChain();
 
     const safeTokenAmount = initialTokenAmount !== null && initialTokenAmount !== undefined ? initialTokenAmount.toString() : '0';
 
     const { data, setData, post, processing, errors, wasSuccessful, reset } = useForm({
         wallet_address: initialWalletAddress || '',
         token_amount: safeTokenAmount,
+        token_name: initialTokenType || 'ETH',
         _method: 'PUT',
     });
 
@@ -43,13 +65,32 @@ const WalletTokenSettings = ({
         }
     }, [wasSuccessful]);
 
+    useEffect(() => {
+        if (data.wallet_address) {
+            const validationResult = addressChecker.checkAddress(data.wallet_address);
+
+            if (!validationResult.isValid) {
+                setAddressError('Invalid wallet address format');
+            } else if (validationResult.type !== data.token_name && (validationResult.type === 'ETH' || validationResult.type === 'SOL')) {
+                setAddressError(`Address format matches ${validationResult.type}, not ${data.token_name}`);
+            } else {
+                setAddressError('');
+            }
+        } else {
+            setAddressError('');
+        }
+        // eslint-disable-next-line
+    }, [data.wallet_address, data.token_name]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/admin/settings/smartcontract');
+        if (!addressError) {
+            post('/admin/settings/smartcontract');
+        }
     };
 
     const hasChanges = () => {
-        return data.wallet_address !== initialWalletAddress || data.token_amount !== safeTokenAmount;
+        return data.wallet_address !== initialWalletAddress || data.token_amount !== safeTokenAmount || data.token_name !== initialTokenType;
     };
 
     const handleReset = () => {
@@ -57,6 +98,7 @@ const WalletTokenSettings = ({
         setData({
             wallet_address: initialWalletAddress || '',
             token_amount: safeTokenAmount,
+            token_name: initialTokenType || 'ETH',
             _method: 'PUT',
         });
     };
@@ -73,7 +115,7 @@ const WalletTokenSettings = ({
                         <div className="flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-700">
                             <Coins className="mr-1 h-4 w-4" />
                             <span>
-                                {Number(initialTokenAmount || 0).toLocaleString()} {tokenName}
+                                {Number(initialTokenAmount || 0).toLocaleString()} {initialTokenType}
                             </span>
                         </div>
                     </div>
@@ -89,6 +131,52 @@ const WalletTokenSettings = ({
 
             <form onSubmit={handleSubmit}>
                 <CardContent className="space-y-6">
+                    {/* Token Type Selection */}
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="token_name" className="text-base">
+                                Token Type
+                            </Label>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Info className="text-muted-foreground h-4 w-4" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p className="max-w-xs">The blockchain network for this token.</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
+
+                        <Select value={data.token_name} onValueChange={(value) => setData('token_name', value)}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select token type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {cryptoChains.map((chain) => (
+                                    <SelectItem key={chain.value} value={chain.value}>
+                                        {chain.fullName} ({chain.value})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        {errors.token_name && <p className="text-destructive mt-1 text-sm">{errors.token_name}</p>}
+
+                        <p className="text-muted-foreground text-sm">
+                            Current type:{' '}
+                            {initialTokenType ? (
+                                <span>
+                                    {cryptoChains.find((chain) => chain.value === initialTokenType)?.fullName || initialTokenType} ({initialTokenType}
+                                    )
+                                </span>
+                            ) : (
+                                <span className="italic">No token type set</span>
+                            )}
+                        </p>
+                    </div>
+
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <Label htmlFor="wallet_address" className="text-base">
@@ -112,11 +200,14 @@ const WalletTokenSettings = ({
                                 id="wallet_address"
                                 value={data.wallet_address}
                                 onChange={(e) => setData('wallet_address', e.target.value)}
-                                placeholder="0x..."
+                                placeholder={
+                                    data.token_name === 'ETH' ? '0x...' : data.token_name === 'SOL' ? 'Solana address...' : 'Wallet address...'
+                                }
                                 className="font-mono"
                             />
                         </div>
 
+                        {addressError && <p className="mt-1 text-sm text-amber-600">{addressError}</p>}
                         {errors.wallet_address && <p className="text-destructive mt-1 text-sm">{errors.wallet_address}</p>}
 
                         <p className="text-muted-foreground text-sm">
@@ -132,7 +223,7 @@ const WalletTokenSettings = ({
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <Label htmlFor="token_amount" className="text-base">
-                                {tokenName} Amount
+                                {data.token_name} Amount
                             </Label>
                             <TooltipProvider>
                                 <Tooltip>
@@ -155,7 +246,7 @@ const WalletTokenSettings = ({
                                 onChange={(e) => setData('token_amount', e.target.value)}
                                 placeholder="0"
                                 min="0"
-                                step="0.0001"   
+                                step="0.0001"
                             />
                         </div>
 
@@ -165,10 +256,10 @@ const WalletTokenSettings = ({
                             Current amount:{' '}
                             {initialTokenAmount !== null ? (
                                 <span>
-                                    {Number(initialTokenAmount).toLocaleString()} {tokenName}
+                                    {Number(initialTokenAmount).toLocaleString()} {initialTokenType}
                                 </span>
                             ) : (
-                                <span className="italic">0 {tokenName}</span>
+                                <span className="italic">0 {initialTokenType}</span>
                             )}
                         </p>
                     </div>
@@ -179,7 +270,7 @@ const WalletTokenSettings = ({
                         <Button type="button" variant="outline" onClick={handleReset} disabled={processing || !hasChanges()}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={processing || !hasChanges()}>
+                        <Button type="submit" disabled={processing || !hasChanges() || !!addressError}>
                             {processing ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>

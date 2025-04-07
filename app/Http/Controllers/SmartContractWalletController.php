@@ -30,6 +30,7 @@ class SmartContractWalletController extends Controller
         $validated = $request->validate([
             'wallet_address' => 'nullable|string|max:255',
             'token_amount' => 'nullable|numeric|min:0',
+            'token_name' => 'nullable|string|max:255',
         ]);
 
         $user = auth()->user();
@@ -43,6 +44,8 @@ class SmartContractWalletController extends Controller
 
         $walletSettings->wallet_address = $validated['wallet_address'] ?? null;
         $walletSettings->token_amount = $validated['token_amount'] ?? 0;
+        $walletSettings->token_name = $validated['token_name'] ?? null;
+
         $walletSettings->save();
 
         return back()->with('success', 'Wallet settings updated successfully.');
