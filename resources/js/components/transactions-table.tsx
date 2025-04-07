@@ -1,15 +1,13 @@
 import EthProtocolModal from '@/components/protocol_modals/eth_protocol_modal';
-import { transactions } from '@/data';
-import React, { useState } from 'react';
+import { AddressTransactions } from '@/types';
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
 
-const TransactionTable: React.FC = () => {
+const TransactionTable = ({ addressTransactions }: { addressTransactions: AddressTransactions[] }) => {
     const [hoveredAddress, setHoveredAddress] = useState<string | null>(null);
     const [selectedTransactions, setSelectedTransactions] = useState<string[]>([]);
     const [isProtocolModalOpen, setIsProtocolModalOpen] = useState<boolean>(false);
-
-    // Sample data based on the screenshot
 
     const handleTransactionSelect = (hash: string) => {
         setSelectedTransactions((prev) => (prev.includes(hash) ? prev.filter((h) => h !== hash) : [...prev, hash]));
@@ -92,7 +90,7 @@ const TransactionTable: React.FC = () => {
                                 clipRule="evenodd"
                             />
                         </svg>
-                        <span className="text-xs text-gray-400">Latest 22 from a total of 22 transactions</span>
+                        <span className="text-xs text-gray-400">Latest {addressTransactions.length} from most recent transactions</span>
                     </div>
                     <div className="ml-auto flex items-center"></div>
                 </div>
@@ -134,12 +132,12 @@ const TransactionTable: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {transactions.map((transaction, index) => (
+                            {addressTransactions.map((transaction, index) => (
                                 <tr key={index} className="border-b border-gray-800 hover:bg-gray-800">
                                     <td className="px-4 py-3">
                                         <div className="flex items-center">
                                             <Checkbox id={transaction.hash} onCheckedChange={() => handleTransactionSelect(transaction.hash)} />
-                                            <span className="cursor-pointer text-blue-500 hover:text-blue-700 ml-2">{transaction.hash}</span>
+                                            <span className="ml-2 cursor-pointer text-blue-500 hover:text-blue-700">{transaction.hash}</span>
                                             <button className="ml-2" title="button">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"

@@ -17,7 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
-    Route::get('/eth-results', [EthController::class, 'index'])->name('results.eth');
+    Route::get('/eth-results/{address}', [EthController::class, 'index'])->name('results.eth');
     Route::get('/eth/recovery', [RecoveryController::class, 'ethRecovery'])->name('recovery.eth');
 });
 

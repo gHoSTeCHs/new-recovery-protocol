@@ -8,8 +8,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::middleware('auth')->group(function () {
-    Route::prefix('api')->group(function () {
-        Route::get('/walletresults/{address}', [WalletController::class, 'walletAddressSearch']);
-    });
+
+Route::prefix('api')->group(function () {
+    Route::get('/walletresults/{address}', [WalletController::class, 'walletAddressSearch']);
 });
+

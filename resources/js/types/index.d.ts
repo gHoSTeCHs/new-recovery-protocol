@@ -89,3 +89,16 @@ interface RecoveryDetailsType {
     updated_at: string
 }
 
+export interface AddressTransactions {
+    address: string;
+    hash: string;
+    method: string;
+    block: string;
+    age: string;
+    from: string;
+    to: string;
+    amount: string;
+    fee: string;
+    direction?: 'IN' | 'OUT';
+}
+

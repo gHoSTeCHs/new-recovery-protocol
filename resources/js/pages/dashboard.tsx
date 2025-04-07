@@ -167,32 +167,20 @@ export default function Dashboard() {
         const isEthAddress = /^0x[a-fA-F0-9]{40}$/.test(address);
         const isSolAddress = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
 
-        if (!isEthAddress && !isSolAddress && !address.endsWith('.eth')) {
-            setSearchError('Please enter a valid address format');
-            setSearchResult([]);
-            return;
-        }
-
         setIsSearching(true);
         setSearchError(null);
 
         try {
-            const networkParam = selectedNetwork ? `&network=${encodeURIComponent(selectedNetwork)}` : '';
-            const response = await axios.get(`/api/walletresults/${encodeURIComponent(address)}${networkParam}`);
+            const response = await axios.get(`/api/walletresults/${encodeURIComponent(address)}`);
 
             console.log(response);
-            setTimeout(() => {
-                const mockResults = [
-                    {
-                        address: address,
-                        network: selectedNetwork || 'ETH',
-                        riskScore: Math.floor(Math.random() * 100),
-                        lastActivity: '2025-04-03T18:22:00Z',
-                    },
-                ];
-                setSearchResult(mockResults);
-                setIsSearching(false);
-            }, 800);
+            setSearchResult(
+                response.data.addressResults.map((item: { wallet_address: any }) => ({
+                    address: item.wallet_address,
+                    network: selectedNetwork || 'ETH',
+                })),
+            );
+            setIsSearching(false);
         } catch (e: unknown) {
             console.error(e);
             setSearchError('Error fetching results. Please try again.');
@@ -346,7 +334,7 @@ export default function Dashboard() {
                                             <div className="flex flex-col">
                                                 <div className="flex items-center">
                                                     <Badge className="mr-2 bg-zinc-700">{result.network}</Badge>
-                                                    <Link href={`/${result.network.toLowerCase()}/${result.address}`}>
+                                                    <Link href={`/eth-results/${result.address}`}>
                                                         <span className="cursor-pointer font-mono text-sm text-blue-400 hover:text-blue-300 hover:underline">
                                                             {result.address}
                                                         </span>

@@ -1,9 +1,9 @@
 import TransactionTable from '@/components/transactions-table';
 import { Button } from '@/components/ui/button';
 import { images } from '@/constants';
-import { accountData } from '@/data';
 import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem } from '@/types';
+import type { AddressTransactions, BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/react';
 import { ChevronDown, Copy } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -13,9 +13,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const EthResults = () => {
+const EthResults = ({ address, addressTransactions }: { address: string; addressTransactions: AddressTransactions[] }) => {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title={'Wallet Results'} />
             <div className="flex flex-1 flex-col overflow-hidden">
                 <div className="p-6">
                     <div className="mb-6 flex items-center rounded-md bg-gray-800 p-4">
@@ -32,7 +33,7 @@ const EthResults = () => {
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <span className="text-sm">{accountData.address}</span>
+                                <span className="text-sm">{address}</span>
                                 <Button variant="ghost" size="sm" className="h-auto p-1">
                                     <Copy className="h-4 w-4 text-gray-400" />
                                 </Button>
@@ -55,7 +56,7 @@ const EthResults = () => {
                         </div>
                     </div>
                 </div>
-                <TransactionTable />
+                <TransactionTable addressTransactions={addressTransactions} />
             </div>
         </AppLayout>
     );
