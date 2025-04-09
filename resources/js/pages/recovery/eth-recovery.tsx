@@ -119,9 +119,9 @@ const ErrorRecoverySimulator = ({ messageType, tokens }: { messageType: MessageT
             gasFee: '930945',
             gasFee_address: 'iwper',
             updated_at: 'werwer',
-            wallet_type: 'Unknown__ to be recovered to address',
+            wallet_type: 'Default',
         });
-    }, []);
+    }, [tokens]);
 
     return (
         <div className="from-background/60 to-muted flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
